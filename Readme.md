@@ -53,41 +53,45 @@ Before starting the project, ensure the following:
 source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 ```
 - Here is the breakdown of the fileds in the ftplogs
-  [1] Timestamp
-[2] Session ID
-[3] Source IP
-[4] Source Port
-[5] Destination IP
-[6] Destination Port
-[7] FTP Username
-[8] FTP Password / Client string
-[9] FTP Command
-[10] FTP Command Argument
-[11-13] File Details (filename, MIME type, size)
-[14] FTP Response Code
-[15] FTP Response Message
-[16] Direction Flag (T or F)
-[17] Data Transfer Source IP
-[18] Data Transfer Destination IP
-[19] Data Transfer Port
-[20] File hash or identifier
+-  [1] Timestamp
+-  [2] Session ID
+-  [3] Source IP
+-  [4] Source Port
+-  [5] Destination IP
+-  [6] Destination Port
+-  [7] FTP Username
+-  [8] FTP Password / Client string
+-  [9] FTP Command
+-  [10] FTP Command Argument
+-  [11-13] File Details (filename, MIME type, size)
+-  [14] FTP Response Code
+-  [15] FTP Response Message
+-  [16] Direction Flag (T or F)
+-  [17] Data Transfer Source IP
+-  [18] Data Transfer Destination IP
+-  [19] Data Transfer Port
+-  [20] File hash or identifier
 
 ### 2.  Extract Relevant Fields
 - Use Splunk's field extraction capabilities or regular expressions to extract these fields for better analysis.
-- Example extraction command:
 ```
-| rex field=_raw "^(?<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}).*?(?<source_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?(?<username>\w+).*?(?<command>[A-Z]+).*?(?<file_path>\/[\w\/.-]+)
+source="ftp.log" host="SoujanyaPC" sourcetype="ftplog" 
+| rex field=_raw "^(?<timestamp>\d+\.\d+)\t(?<session_id>\S+)\t(?<src_ip>\d+\.\d+\.\d+\.\d+)\t(?<src_port>\d+)\t(?<dst_ip>\d+\.\d+\.\d+\.\d+)\t(?<dst_port>\d+)\t(?<username>\S+)\t(?<password>\S*)\t(?<ftp_command>\S+)\t(?<command_arg>[^\\t]*)\t(?<file_type>[^\\t]*)\t(?<file_size>[^\\t]*)\t(?<response_code>\d+)\t(?<response_msg>[^\t]+)\t(?<direction>[TF])\t(?<data_src_ip>\d+\.\d+\.\d+\.\d+)\t(?<data_dst_ip>\d+\.\d+\.\d+\.\d+)\t(?<data_port>\d+)\t(?<file_hash>.*)$"
 "
 ```
 
 Explanation:
 - `^`: Start of the line.
-- `(?<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})`: Matches and captures the timestamp in the format "YYYY-MM-DD HH:MM:SS".
-- `.*?`: Matches any character (except for line terminators) as few times as possible.
-- `(?<source_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`: Matches and captures the source IP address.
-- `(?<username>\w+)`: Matches and captures the username (assuming it consists of alphanumeric characters).
-- `(?<command>[A-Z]+)`: Matches and captures the FTP command (assuming it consists of uppercase letters).
-- `(?<file_path>\/[\w\/.-]+)`: Matches and captures the file path (assuming it starts with "/" and can contain alphanumeric characters, "/", ".", and "-").
+-timestamp	\d+\.\d+
+-session_id	\S+
+-src_ip / dst_ip	\d+\.\d+\.\d+\.\d+
+-src_port / dst_port / data_port	\d+
+-username / ftp_command	\S+
+-password / command_arg	\S* or [^\\t]*
+-response_code	\d+
+-response_msg	[^\t]+
+-direction	[TF]
+-file_hash	.* (can be - or a real hash)
 
 
 ### 3. Analyze File Transfer Activity
