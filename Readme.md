@@ -50,7 +50,7 @@ Before starting the project, ensure the following:
 - Open Splunk interface and navigate to the search bar.
 - Enter the following search query to retrieve FTP events
 ```
-index=<your_ftp_index> sourcetype=<your_ftp_sourcetype>
+source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 ```
 
 ### 2.  Extract Relevant Fields
