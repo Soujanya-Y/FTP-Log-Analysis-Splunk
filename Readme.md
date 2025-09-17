@@ -94,6 +94,8 @@ Explanation:
 -  direction	[TF]
 -  file_hash	.* (can be - or a real hash)
 
+[Field_extraction_ftp_splunk_log.png](field_extraction_ftp_splunk_log.png)
+
 
 ### 3. Analyze File Transfer Activity
 - Determine the frequency and volume of file transfers.
