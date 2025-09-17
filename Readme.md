@@ -82,16 +82,16 @@ source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 
 Explanation:
 - `^`: Start of the line.
--timestamp	\d+\.\d+
--session_id	\S+
--src_ip / dst_ip	\d+\.\d+\.\d+\.\d+
--src_port / dst_port / data_port	\d+
--username / ftp_command	\S+
--password / command_arg	\S* or [^\\t]*
--response_code	\d+
--response_msg	[^\t]+
--direction	[TF]
--file_hash	.* (can be - or a real hash)
+-  timestamp	\d+\.\d+
+-  session_id	\S+
+-  src_ip / dst_ip	\d+\.\d+\.\d+\.\d+
+-  src_port / dst_port / data_port	\d+
+-  username / ftp_command	\S+
+-  password / command_arg	\S* or [^\\t]*
+-  response_code	\d+
+-  response_msg	[^\t]+
+-  direction	[TF]
+-  file_hash	.* (can be - or a real hash)
 
 
 ### 3. Analyze File Transfer Activity
