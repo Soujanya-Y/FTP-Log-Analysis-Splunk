@@ -52,6 +52,7 @@ Before starting the project, ensure the following:
 ```
 source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 ```
+[Raw_ftp_splunk_log](Raw_ftp_splunk_log.png)
 - Here is the breakdown of the fileds in the ftplogs
 -  [1] Timestamp
 -  [2] Session ID
