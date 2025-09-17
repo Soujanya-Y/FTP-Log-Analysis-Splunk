@@ -52,9 +52,27 @@ Before starting the project, ensure the following:
 ```
 source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 ```
+- Here is the breakdown of the fileds in the ftplogs
+  [1] Timestamp
+[2] Session ID
+[3] Source IP
+[4] Source Port
+[5] Destination IP
+[6] Destination Port
+[7] FTP Username
+[8] FTP Password / Client string
+[9] FTP Command
+[10] FTP Command Argument
+[11-13] File Details (filename, MIME type, size)
+[14] FTP Response Code
+[15] FTP Response Message
+[16] Direction Flag (T or F)
+[17] Data Transfer Source IP
+[18] Data Transfer Destination IP
+[19] Data Transfer Port
+[20] File hash or identifier
 
 ### 2.  Extract Relevant Fields
-- Identify key fields in FTP logs such as timestamps, source IP, username, commands, filenames, etc.
 - Use Splunk's field extraction capabilities or regular expressions to extract these fields for better analysis.
 - Example extraction command:
 ```
