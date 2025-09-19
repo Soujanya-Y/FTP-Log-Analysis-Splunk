@@ -142,7 +142,7 @@ source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 | anomalydetection total_bytes
 
 ```
-[AnomalyDetection.png](AnomolyDetection.png)
+[AnomalyDetection.png](AnomalyDetection.png)
 
 - Analyze sudden spikes or drops in file transfer volume.
 ```
