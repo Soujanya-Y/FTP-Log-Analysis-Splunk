@@ -132,10 +132,29 @@ source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 
 ### 4. Detect Anomalies
 - Look for unusual patterns in file transfer activity.
+```
+source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
+| rex field=_raw "^(?<timestamp>\d+\.\d+)\t(?<session_id>\S+)\t(?<src_ip>\S+)\t(?<src_port>\d+)\t(?<dst_ip>\S+)\t(?<dst_port>\d+)\t(?<username>[^\t]+)\t(?<password>[^\t]*)\t(?<ftp_command>[^\t]+)\t(?<command_arg>[^\t]*)\t(?<file_type>[^\t]*)\t(?<file_size>[^\t]*)\t(?<response_code>\d+)\t(?<response_msg>[^\t]*)\t(?<direction>[TF\-]*)\t(?<data_src_ip>[^\t]*)\t(?<data_dst_ip>[^\t]*)\t(?<data_port>[^\t]*)\t(?<file_hash>.*)$"
+| where ftp_command="RETR" OR ftp_command="STOR"
+| eval file_size=if(file_size=="-", 0, tonumber(file_size))
+| eval _time=strptime(timestamp, "%s.%6N")
+| timechart span=1h sum(file_size) as total_bytes
+| anomalydetection total_bytes
+
+```
+[AnomalyDetection.png](AnomolyDetection.png)
+
 - Analyze sudden spikes or drops in file transfer volume.
+```
+source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
+| rex field=_raw ...
+| where ftp_command="RETR" OR ftp_command="STOR"
+| eval file_size=if(file_size=="-", 0, tonumber(file_size))
+| timechart span=1h sum(file_size) as volume by username
+| anomalydetection *
+```  
 - Investigate file transfers to or from suspicious IP addresses.
 - Use statistical analysis or machine learning models to detect anomalies.
-
 
 ### 5. Monitor User Behavior
 - Monitor user behavior during file transfers.
@@ -145,6 +164,4 @@ source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 ## Conclusion
 Analyzing FTP log files using Splunk SIEM provides valuable insights into file transfer activities within a network. By monitoring FTP events, detecting anomalies, and correlating with other logs, organizations can enhance their security posture and protect against various cyber threats.
 
-Feel free to customize these steps according to your specific use case and requirements. 
 
-Happy analyzing!
