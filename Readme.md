@@ -159,6 +159,16 @@ source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 ### 5. Monitor User Behavior
 - Monitor user behavior during file transfers.
 - Identify users with multiple failed login attempts or unauthorized access attempts.
+```
+source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
+| rex field=_raw "^(?<timestamp>\d+\.\d+)\t(?<session_id>\S+)\t(?<src_ip>\S+)\t(?<src_port>\d+)\t(?<dst_ip>\S+)\t(?<dst_port>\d+)\t(?<username>[^\t]+)\t(?<password>[^\t]*)\t(?<ftp_command>[^\t]+)\t(?<command_arg>[^\t]*)\t(?<file_type>[^\t]*)\t(?<file_size>[^\t]*)\t(?<response_code>\d+)\t(?<response_msg>[^\t]*)\t(?<direction>[TF\-]*)\t(?<data_src_ip>[^\t]*)\t(?<data_dst_ip>[^\t]*)\t(?<data_port>[^\t]*)\t(?<file_hash>.*)$"
+| eval _time=strptime(timestamp, "%s.%6N")
+| where response_code=530 OR match(response_msg, "(?i)(denied|incorrect|failed|unauthorized)")
+| stats count as failed_attempts values(response_msg) as messages by username, src_ip
+| where failed_attempts > 3
+| sort - failed_attempts
+```
+[ftpfailedlogins.png](ftpfailedlogins.png)
 - Analyze user activity patterns and deviations from normal behavior.
 
 ## Conclusion
