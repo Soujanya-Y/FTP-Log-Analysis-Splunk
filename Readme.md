@@ -76,8 +76,7 @@ source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
 ### 2.  Extract Relevant Fields
 - Use Splunk's field extraction capabilities or regular expressions to extract these fields for better analysis.
 ```
-source="ftp.log" host="SoujanyaPC" sourcetype="ftplog" 
-| rex field=_raw "^(?<timestamp>\d+\.\d+)\t(?<session_id>\S+)\t(?<src_ip>\d+\.\d+\.\d+\.\d+)\t(?<src_port>\d+)\t(?<dst_ip>\d+\.\d+\.\d+\.\d+)\t(?<dst_port>\d+)\t(?<username>\S+)\t(?<password>\S*)\t(?<ftp_command>\S+)\t(?<command_arg>[^\\t]*)\t(?<file_type>[^\\t]*)\t(?<file_size>[^\\t]*)\t(?<response_code>\d+)\t(?<response_msg>[^\t]+)\t(?<direction>[TF])\t(?<data_src_ip>\d+\.\d+\.\d+\.\d+)\t(?<data_dst_ip>\d+\.\d+\.\d+\.\d+)\t(?<data_port>\d+)\t(?<file_hash>.*)$"
+| rex field=_raw "^(?<timestamp>\d+\.\d+)\t(?<session_id>\S+)\t(?<src_ip>\d+\.\d+\.\d+\.\d+)\t(?<src_port>\d+)\t(?<dst_ip>\d+\.\d+\.\d+\.\d+)\t(?<dst_port>\d+)\t(?<username>[^\t]+)\t(?<password>[^\t]*)\t(?<ftp_command>[^\t]+)\t(?<command_arg>[^\t]*)\t(?<file_type>[^\t]*)\t(?<file_size>[^\t]*)\t(?<response_code>\d+)\t(?<response_msg>[^\t]*)\t(?<direction>[TF\-]*)\t(?<data_src_ip>[^\t]*)\t(?<data_dst_ip>[^\t]*)\t(?<data_port>[^\t]*)\t(?<file_hash>.*)$"
 "
 ```
 
@@ -87,11 +86,10 @@ Explanation:
 -  session_id	\S+
 -  src_ip / dst_ip	\d+\.\d+\.\d+\.\d+
 -  src_port / dst_port / data_port	\d+
--  username / ftp_command	\S+
--  password / command_arg	\S* or [^\\t]*
+-  username / ftp_command /password / command_arg	[^\t]+
 -  response_code	\d+
 -  response_msg	[^\t]+
--  direction	[TF]
+-  direction	[TF\-]
 -  file_hash	.* (can be - or a real hash)
 
 [Field_extraction_ftp_splunk_log.png](field_extraction_ftp_splunk_log.png)
