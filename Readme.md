@@ -97,9 +97,38 @@ Explanation:
 
 ### 3. Analyze File Transfer Activity
 - Determine the frequency and volume of file transfers.
+```
+source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
+| rex field=_raw "^(?<timestamp>\d+\.\d+)\t(?<session_id>\S+)\t(?<src_ip>\S+)\t(?<src_port>\d+)\t(?<dst_ip>\S+)\t(?<dst_port>\d+)\t(?<username>[^\t]+)\t(?<password>[^\t]*)\t(?<ftp_command>[^\t]+)\t(?<command_arg>[^\t]*)\t(?<file_type>[^\t]*)\t(?<file_size>[^\t]*)\t(?<response_code>\d+)\t(?<response_msg>[^\t]*)\t(?<direction>[TF\-]*)\t(?<data_src_ip>[^\t]*)\t(?<data_dst_ip>[^\t]*)\t(?<data_port>[^\t]*)\t(?<file_hash>.*)$"
+| where ftp_command="RETR" OR ftp_command="STOR"
+| eval file_size=if(file_size=="-", 0, tonumber(file_size))
+| eval _time=strptime(timestamp, "%s.%6N")
+| timechart span=1h count as "Transfer Count", sum(file_size) as "Total Bytes Transferred"
+
+```
+[Frequency_vs_Volume.png](Frequency_vs_Volume.png)
 - Identify top users or IP addresses involved in file transfers.
+```
+source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
+| rex field=_raw "^(?<timestamp>\d+\.\d+)\t(?<session_id>\S+)\t(?<src_ip>\S+)\t(?<src_port>\d+)\t(?<dst_ip>\S+)\t(?<dst_port>\d+)\t(?<username>[^\t]+)\t(?<password>[^\t]*)\t(?<ftp_command>[^\t]+)\t(?<command_arg>[^\t]*)\t(?<file_type>[^\t]*)\t(?<file_size>[^\t]*)\t(?<response_code>\d+)\t(?<response_msg>[^\t]*)\t(?<direction>[TF\-]*)\t(?<data_src_ip>[^\t]*)\t(?<data_dst_ip>[^\t]*)\t(?<data_port>[^\t]*)\t(?<file_hash>.*)$"
+| where ftp_command="RETR" OR ftp_command="STOR"
+| eval file_size=if(file_size=="-", 0, tonumber(file_size))
+| stats count as transfer_count sum(file_size) as total_bytes by username
+| sort - transfer_count
+| head 10
+
+```
+[Topusers.png](Topusers.png)
 - Analyze the types of files being transferred (e.g., documents, executables, archives).
-- Use stats command to calculate statistics such as count, sum, avg, etc.
+```
+source="ftp.log" host="SoujanyaPC" sourcetype="ftplog"
+| rex field=_raw "^(?<timestamp>\d+\.\d+)\t(?<session_id>\S+)\t(?<src_ip>\S+)\t(?<src_port>\d+)\t(?<dst_ip>\S+)\t(?<dst_port>\d+)\t(?<username>[^\t]+)\t(?<password>[^\t]*)\t(?<ftp_command>[^\t]+)\t(?<command_arg>[^\t]*)\t(?<file_type>[^\t]*)\t(?<file_size>[^\t]*)\t(?<response_code>\d+)\t(?<response_msg>[^\t]*)\t(?<direction>[TF\-]*)\t(?<data_src_ip>[^\t]*)\t(?<data_dst_ip>[^\t]*)\t(?<data_port>[^\t]*)\t(?<file_hash>.*)$"
+| where ftp_command="RETR" OR ftp_command="STOR"
+| eval file_type=if(file_type=="-" OR isnull(file_type), "unknown", file_type)
+| stats count as transfer_count sum(eval(if(file_size=="-", 0, tonumber(file_size)))) as total_bytes by file_type
+| sort - transfer_count
+```
+[FileTypes.png](FileTypes.png)
 
 ### 4. Detect Anomalies
 - Look for unusual patterns in file transfer activity.
